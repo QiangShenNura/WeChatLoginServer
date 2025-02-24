@@ -38,10 +38,6 @@
         <el-avatar :src="userInfo.headimgurl" :size="64"></el-avatar>
         <h3>{{ userInfo.nickname }}</h3>
         <p class="user-detail">欢迎使用</p>
-        <div class="user-extra">
-          <p>性别: {{ userInfo.sex === 1 ? '男' : userInfo.sex === 2 ? '女' : '未知' }}</p>
-          <p>地区: {{ userInfo.country }} {{ userInfo.province }} {{ userInfo.city }}</p>
-        </div>
       </div>
     </el-card>
   </div>
@@ -61,7 +57,7 @@ let pollTimer = null // 用于存储轮询定时器
 // 获取用户信息的轮询函数
 const pollUserInfo = async () => {
   try {
-    const baseUrl = 'http://fvmq8e.natappfree.cc'  // 使用你的内网穿透地址
+    const baseUrl = 'http://rwc7kr.natappfree.cc'  // 使用你的内网穿透地址
     const response = await axios.get(`${baseUrl}/api/wechat/check-status`, {
       timeout: 5000,
       validateStatus: null
@@ -96,7 +92,7 @@ const getQrcodeUrl = async () => {
     loading.value = true
     console.log('开始请求二维码URL...')
     
-    const baseUrl = 'http://fvmq8e.natappfree.cc'  // 使用你的内网穿透地址
+    const baseUrl = 'http://rwc7kr.natappfree.cc'  // 使用你的内网穿透地址
     console.log('请求后端地址:', baseUrl)
     
     const response = await axios.get(`${baseUrl}/api/wechat/qrcode`, {
