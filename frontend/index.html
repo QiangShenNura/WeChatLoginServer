@@ -2,11 +2,19 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>微信扫码登录</title>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
+    <!-- 添加与安卓通信的桥接 -->
+    <script>
+      window.AndroidInterface = window.AndroidInterface || {
+        onWechatUserInfo: function(userInfo) {
+          console.log('安卓接口未初始化');
+        }
+      };
+    </script>
   </body>
 </html> 

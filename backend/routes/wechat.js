@@ -93,20 +93,17 @@ router.get('/qrcode', async (req, res) => {
   }
 });
 
-// 处理微信回调
+// 添加一个 Map 用于存储用户信息
+const userInfoMap = new Map();
+
+// 修改 callback 路由，存储用户信息
 router.get('/callback', async (req, res) => {
-  console.log('请求头:', req.headers);
-  console.log('请求URL:', req.url);
-  console.log('请求方法:', req.method);
-  console.log('请求参数:', req.query);
-  console.log('请求内容', req.body)
   try {
     const { code } = req.query;
-    console.log()
+    console.log('收到微信回调，code:', code);
     
     // 使用code获取access_token
     const tokenUrl = `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${process.env.WECHAT_APP_ID}&secret=${process.env.WECHAT_APP_SECRET}&code=${code}&grant_type=authorization_code`;
-    
     const tokenResponse = await axios.get(tokenUrl);
     const { access_token, openid } = tokenResponse.data;
 
@@ -114,11 +111,75 @@ router.get('/callback', async (req, res) => {
     const userInfoUrl = `https://api.weixin.qq.com/sns/userinfo?access_token=${access_token}&openid=${openid}`;
     const userInfoResponse = await axios.get(userInfoUrl);
 
-    // 返回用户信息
-    res.json(userInfoResponse.data);
+    // 存储用户信息
+    userInfoMap.set(openid, userInfoResponse.data);
+    console.log('存储用户信息:', userInfoResponse.data);
+
+    // 返回成功页面
+    res.send(`
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>登录成功</title>
+          <style>
+            body {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              height: 100vh;
+              margin: 0;
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+              background-color: #f5f5f5;
+            }
+            .success-icon {
+              color: #07C160;
+              font-size: 64px;
+              margin-bottom: 20px;
+            }
+            .message {
+              color: #333;
+              text-align: center;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="success-icon">✓</div>
+          <div class="message">
+            <h2>登录成功</h2>
+            <p>请返回原页面</p>
+          </div>
+        </body>
+      </html>
+    `);
   } catch (error) {
     console.error('处理回调失败:', error);
-    res.status(500).json({ message: '处理回调失败' });
+    res.status(500).json({ message: '处理回调失败', error: error.message });
+  }
+});
+
+// 添加检查状态的接口
+router.get('/check-status', (req, res) => {
+  try {
+    console.log('检查用户状态...');
+    console.log('当前存储的用户数:', userInfoMap.size);
+    
+    // 获取最新的用户信息
+    const latestUserInfo = Array.from(userInfoMap.values())[userInfoMap.size - 1];
+    
+    if (latestUserInfo) {
+      console.log('找到用户信息:', latestUserInfo);
+      res.json({ userInfo: latestUserInfo });
+      // 返回后清除用户信息，避免重复返回
+      userInfoMap.clear();
+    } else {
+      console.log('未找到用户信息');
+      res.json({ userInfo: null });
+    }
+  } catch (error) {
+    console.error('检查状态失败:', error);
+    res.status(500).json({ message: '检查状态失败', error: error.message });
   }
 });
 
