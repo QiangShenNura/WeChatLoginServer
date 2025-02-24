@@ -100,7 +100,6 @@ router.get('/callback', async (req, res) => {
   console.log('请求方法:', req.method);
   console.log('请求参数:', req.query);
   console.log('请求内容', req.body)
-  console.log('res:', res)
   try {
     const { code } = req.query;
     console.log()

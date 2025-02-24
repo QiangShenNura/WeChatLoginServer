@@ -7,15 +7,17 @@
         </div>
       </template>
       <div class="qrcode-container">
-        <iframe 
-          v-if="qrcodeUrl" 
-          :src="qrcodeUrl" 
-          frameborder="0" 
-          width="300" 
-          height="400"
-          @load="handleIframeLoad"
-          @error="handleIframeError"
-        ></iframe>
+        <qrcode-vue
+          v-if="qrcodeUrl"
+          :value="qrcodeUrl"
+          :size="200"
+          level="H"
+          render-as="svg"
+          :margin="2"
+          :foreground="'#2C8532'"
+          :background="'#ffffff'"
+          @click="refreshQrcode"
+        />
         <el-alert
           v-if="error"
           :title="error"
@@ -23,7 +25,7 @@
           show-icon
           :closable="false"
         />
-        <el-button type="primary" @click="refreshQrcode" :loading="loading">
+        <el-button type="success" @click="refreshQrcode" :loading="loading">
           刷新二维码
         </el-button>
       </div>
@@ -38,6 +40,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import QrcodeVue from 'qrcode.vue'
 
 const qrcodeUrl = ref('')
 const loading = ref(false)
@@ -128,9 +131,8 @@ onMounted(() => {
   gap: 20px;
 }
 
-.qrcode-container iframe {
-  border: 1px solid #eee;
-  border-radius: 4px;
+.qrcode-container :deep(svg) {
+  border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
