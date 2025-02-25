@@ -18,7 +18,7 @@ osascript -e "tell application \"Terminal\" to do script \"cd \\\"$SCRIPT_DIR/ba
 
 # 等待后端服务器启动
 echo "等待后端服务器启动..."
-sleep 5
+sleep 2
 
 # 测试后端服务器
 echo "测试后端服务器..."

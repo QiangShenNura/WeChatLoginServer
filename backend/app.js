@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 const wechatRoutes = require('./routes/wechat');
 
 // 加载环境变量
@@ -26,9 +27,15 @@ app.use(express.json());
 // 路由配置
 app.use('/api/wechat', wechatRoutes);
 
-// 添加根路由测试
-app.get('/', (req, res) => {
-  res.send('Server is running at root');
+// 处理前端路由
+app.get('/login', (req, res) => {
+  res.redirect('/');
+});
+
+// 处理根路径和所有前端路由
+app.get('*', (req, res) => {
+  // 在开发环境中，重定向到 Vite 开发服务器
+  res.redirect('http://localhost:8080');
 });
 
 // 添加调试路由
@@ -51,19 +58,28 @@ console.log('PORT:', process.env.PORT);
 console.log('WECHAT_APP_ID:', process.env.WECHAT_APP_ID);
 console.log('WECHAT_REDIRECT_URI:', process.env.WECHAT_REDIRECT_URI);
 
-const port = 8080;  // 修改为新的本地端口
+const port = 3000;  // 修改为新的本地端口
 
-// 添加错误处理
+// 添加启动日志
 const server = app.listen(port, '127.0.0.1', () => {
-  console.log(`后端服务运行在 http://127.0.0.1:${port}`);
-  console.log('服务器已准备好接收请求');
-}).on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`端口 ${port} 已被占用，请尝试其他端口`);
+  console.log('=================================');
+  console.log(`后端服务器启动信息:`);
+  console.log(`- 时间: ${new Date().toISOString()}`);
+  console.log(`- 环境: ${process.env.NODE_ENV}`);
+  console.log(`- 端口: ${port}`);
+  console.log(`- 地址: http://127.0.0.1:${port}`);
+  console.log('=================================');
+});
+
+// 添加服务器错误处理
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`错误: 端口 ${port} 已被占用`);
+    console.error('请确保没有其他服务正在使用该端口');
+    process.exit(1);
   } else {
-    console.error('服务器启动失败:', err);
+    console.error('服务器错误:', error);
   }
-  process.exit(1);
 });
 
 // 优雅关闭

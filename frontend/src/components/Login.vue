@@ -147,7 +147,7 @@ watch(userInfo, (newValue) => {
   if (newValue) {
     try {
       // 调用安卓接口
-      window.AndroidInterface?.onWechatUserInfo(JSON.stringify(newValue))
+      window.NativeBridge?.onJSWechatUserInfo(JSON.stringify(newValue))
       console.log('已将用户信息发送到安卓层:', newValue)
     } catch (err) {
       console.error('调用安卓接口失败:', err)
